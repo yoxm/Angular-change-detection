@@ -18,13 +18,13 @@ Angular的应用程序是一颗组件树，每一个组件都有自己的变化�
 
 知道了变化监测之后，我们可能会想，变化监测究竟发生在什么时候？Angular何时知道它必须更新视图？看下面的代码。
 
-![](/Users/youxiaomao/Documents/assets/code.png)
+![](assets/code.png)
 
 上面的组件简单地显示了两个属性，并提供了一个方法来在点击模板中的按钮时更改它们。点击此特定按钮的时刻是应用程序状态发生更改的时刻，因为它会更改组件的属性。这是我们想要更新视图的时刻。
 
 再看另一个
 
-![](/Users/youxiaomao/Documents/assets/code1.png)
+![](assets/code1.png)
 
 这个组件拥有一个联系人列表，当它初始化的时候，发起了一个http请求。一旦请求完成返回，就会触发订阅，列表就会更新。同样，在这一点上，我们的应用程序状态已经改变，所以我们将要更新视图。
 
@@ -40,7 +40,7 @@ Angular的应用程序是一颗组件树，每一个组件都有自己的变化�
 
 知道了组件状态更改的原因，但是告诉Angular的是什么？为什么在这个特殊的时刻，视图必须被更新？并且Angular允许我们直接使用本地API，不需要调用拦截器方法，Angular依旧能够更新DOM，这是什么？魔术？
 
-![](/Users/youxiaomao/Documents/assets/magic.gif)
+![](assets/magic.gif)
 
 不是，是**ZONE**。
 
@@ -52,7 +52,7 @@ ZONE的官方说明是这么介绍他的，
 
 Angular利用ZONE创建了自己的ngZone，整体监测的过程是有一件事叫做`ApplicationRef`监听`NgZones``onTurnDone`事件。每当这个事件被触发时，它就执行一个`tick()`基本上执行变化检测的功能。
 
-![](/Users/youxiaomao/Documents/assets/code13.png)
+![](assets/code13.png)
 
 ## EventLoop
 
@@ -63,7 +63,7 @@ javascript是一门**单线程**语言，在最新的HTML5中提出了Web-Worker
 * 同步任务
 * 异步任务
 
-![](/Users/youxiaomao/Documents/assets/QQ20180505-140946@2x.png)
+![](assets/QQ20180505-140946@2x.png)
 
 例如下面的一段代码：
 
@@ -220,17 +220,17 @@ N: number of bindings
 
 先来看**Immutable配合onPush策略**。
 
-![](/Users/youxiaomao/Documents/assets/QQ20180505-152337@2x.png)
+![](assets/QQ20180505-152337@2x.png)
 
 由于Immutable对象的不可变性，每次增加，改变，删除，都会返回一个新的对象引用。而onPush策略，则是在输入属性的引用变化后，才会对这个组件进行检测。如上图，点击按钮后，immutable对象返回了一个新的引用，这样会触发组件的变更监测。
 
-![](/Users/youxiaomao/Documents/assets/QQ20180505-153546@2x.png)
+![](assets/QQ20180505-153546@2x.png)
 
 
 
 **Observable配合onPush策略**
 
-![](/Users/youxiaomao/Documents/assets/code10.png)
+![](assets/code10.png)
 
 假设我们用购物车构建电子商务应用程序。每当用户将产品放入购物车时，我们都希望在我们的用户界面中显示一个小计数器，以便用户可以看到购物车中的产品数量。
 
@@ -238,7 +238,7 @@ N: number of bindings
 
 但是，如前所述，引用`addItemStream`永远不会改变，所以对组件的子树永远不会执行更改检测。这是一个问题，因为组件在其`ngOnInit`生命周期钩子中订阅了该流并增加了计数器。所以这不是我们所期望的表现。
 
-![](/Users/youxiaomao/Documents/assets/QQ20180505-154624@2x.png)
+![](assets/QQ20180505-154624@2x.png)
 
 我们如何才能告知Angular这种改变？我们如何告诉Angular ，即使整个树被设置为`OnPush`，也**需要**为此组件执行更改检测。
 
@@ -246,10 +246,10 @@ N: number of bindings
 
 我们可以`ChangeDetectorRef`通过[依赖注入](http://blog.thoughtram.io/angular/2015/05/18/dependency-injection-in-angular-2.html)来访问一个组件，该API [依赖](http://blog.thoughtram.io/angular/2015/05/18/dependency-injection-in-angular-2.html)于一个名为API的API `markForCheck()`。这种方法正是我们需要的！它标记从组件到根的路径，以便检查下次更改检测运行。
 
-![](/Users/youxiaomao/Documents/assets/code11.png)
+![](assets/code11.png)
 
 上面的markForCheck标记从这个组件到root的路径被检查。
 
-![](/Users/youxiaomao/Documents/assets/QQ20180505-155139@2x.png)
+![](assets/QQ20180505-155139@2x.png)
 
 如果想要了解更多，可以查看[ChangeDectorRef](https://angular.io/api/core/ChangeDetectorRef)。
